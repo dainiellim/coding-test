@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const commentController = require('../src/controllers/comment.controller');
-const { createCommentValidation, showCommentValidation, indexCommentValidation } = require('../src/requests/comment.validation');
+const { createCommentValidation, showCommentValidation, indexCommentValidation, toggleCommentLikeValidation } = require('../src/requests/comment.validation');
 const handleValidationErrors = require('../src/middleware/validationHandler');
 
 
@@ -23,7 +23,7 @@ module.exports = () => {
         commentController.show
     );
     router.post('/api/users/:userId/comments/:id/toggle_like',
-        showCommentValidation,
+        toggleCommentLikeValidation,
         handleValidationErrors,
         commentController.toggleLike
     );

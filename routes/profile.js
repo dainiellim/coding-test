@@ -31,11 +31,24 @@ module.exports = function () {
   });
 
 
-  router.post('/api/users', createUserProfileValidation, handleValidationErrors, userProfileController.store);
-  router.get('/api/users', userProfileController.index);
-  router.get('/api/users/:id', showUserProfileValidation, handleValidationErrors, userProfileController.show);
-  router.put('/api/users/:id', updateUserProfileValidation, handleValidationErrors, userProfileController.update);
-
+  router.post('/api/users',
+    createUserProfileValidation,
+    handleValidationErrors,
+    userProfileController.store
+  );
+  router.get('/api/users',
+    userProfileController.index
+  );
+  router.get('/api/users/:id',
+    showUserProfileValidation,
+    handleValidationErrors,
+    userProfileController.show
+  );
+  router.put('/api/users/:id',
+    updateUserProfileValidation,
+    handleValidationErrors,
+    userProfileController.update
+  );
 
   return router;
 }

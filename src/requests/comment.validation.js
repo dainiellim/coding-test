@@ -1,6 +1,7 @@
 const { check } = require('express-validator');
 const checkIfExist = require('../util/checkIfExist');
 const userProfileModel = require('../models/userProfile.model')
+const commentModel = require('../models/comment.model')
 const mbtiEnum = require('../enums/mbti.enum');
 const enneagramEnum = require('../enums/enneagram.enum');
 const zodiacEnum = require('../enums/zodiac.enum');
@@ -11,7 +12,7 @@ const createCommentValidation = [
         .isNumeric().withMessage('user id must be a number')
         .custom((value) => checkIfExist(userProfileModel, value, 'id')),
     check('comment_by')
-        .isNumeric().withMessage('user id must be a number')
+        .isNumeric().withMessage('comment by must be a number')
         .custom((value) => checkIfExist(userProfileModel, value, 'id')),
     check('title').optional(),
     check('comment').optional(),
@@ -42,12 +43,15 @@ const showCommentValidation = [
 ];
 
 const toggleCommentLikeValidation = [
-    check('user_id').isNumeric().withMessage('user id must be a number'),
-    check('id').isNumeric().withMessage('ID must be a number'),
+    check('user_id').isNumeric().withMessage('user id must be a number')
+        .custom((value) => checkIfExist(userProfileModel, value, 'id')),
+    check('id').isNumeric().withMessage('ID must be a number')
+        .custom((value) => checkIfExist(commentModel, value, 'id')),
 ];
 
 module.exports = {
     createCommentValidation,
     indexCommentValidation,
     showCommentValidation,
+    toggleCommentLikeValidation,
 };

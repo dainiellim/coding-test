@@ -1,7 +1,6 @@
 const winston = require('winston');
 
 const errorHandler = (err, req, res, next) => {
-    console.log(err);
     logger.error('An error occurred:', err);
     next();
 }
