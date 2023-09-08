@@ -3,6 +3,8 @@
 const express = require('express');
 const router = express.Router();
 const userProfileController = require('../src/controllers/userProfile.controller');
+const { showUserProfileValidation, updateUserProfileValidation, createUserProfileValidation } = require('../src/requests/userProfile.validation');
+const handleValidationErrors = require('../src/middleware/validationHandler');
 
 const profiles = [
   {
@@ -28,11 +30,11 @@ module.exports = function () {
     });
   });
 
-  router.get('/api/users', function (req, res, next) {
-    res.json({ "data": {} });
-  });
-  router.post('/api/users', userProfileController.store);
-  // router.post();
+
+  router.post('/api/users', createUserProfileValidation, handleValidationErrors, userProfileController.store);
+  router.get('/api/users', userProfileController.index);
+  router.get('/api/users/:id', showUserProfileValidation, handleValidationErrors, userProfileController.show);
+  router.put('/api/users/:id', updateUserProfileValidation, handleValidationErrors, userProfileController.update);
 
 
   return router;

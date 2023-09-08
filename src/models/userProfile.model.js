@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 
 const schema = new mongoose.Schema(
     {
+        id: {
+            type: Number,
+            unique: true,
+        },
         name: {
             type: String,
             required: true,
@@ -57,6 +61,20 @@ const schema = new mongoose.Schema(
         timestamps: true
     }
 );
+
+schema.index({ id: 1, name: 1 });
+
+schema.pre('save', async function (next) {
+    if (!this.id) {
+        const highestIdUser = await this.constructor.findOne({}, { id: 1 }, { sort: { id: -1 } });
+        if (highestIdUser) {
+            this.id = highestIdUser.id + 1;
+        } else {
+            this.id = 1;
+        }
+    }
+    next();
+});
 
 const userProfileModel = mongoose.model('user_profiles', schema);
 

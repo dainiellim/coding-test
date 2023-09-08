@@ -7,6 +7,7 @@ const { MongoMemoryServer } = require('mongodb-memory-server');
 const mongoose = require('mongoose');
 const errorHandler = require('./src/middleware/errorHandler');
 
+//establish in memory mongodb and establish connection
 (async () => {
     const mongoServer = await MongoMemoryServer.create();
     console.log(mongoServer.getUri());
@@ -14,7 +15,16 @@ const errorHandler = require('./src/middleware/errorHandler');
     console.log('Connected to MongoDB');
 })();
 
-app.use(express.json());
+// json parser and handle json error
+app.use((req, res, next) => {
+    express.json()(req, res, err => {
+        if (err) {
+            console.error(err);
+            return res.status(400).json({ error: 'Invalid JSON' });
+        }
+        next();
+    });
+});
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
