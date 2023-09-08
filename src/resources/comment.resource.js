@@ -1,4 +1,6 @@
 const commentResource = (comment) => {
+
+
     return {
         "id": comment.id,
         "user_id": comment.user_id,
@@ -7,7 +9,7 @@ const commentResource = (comment) => {
         "mbti": comment.mbti,
         "enneagram": comment.enneagram,
         "zodiac": comment.zodiac,
-        "like": "",
+        "likes": comment.likes,
         "created_at": comment.createdAt,
     };
 }

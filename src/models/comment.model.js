@@ -11,6 +11,11 @@ const schema = new mongoose.Schema(
             unique: false,
             required: true,
         },
+        comment_by: {
+            type: Number,
+            unique: false,
+            required: true,
+        },
         title: {
             type: String,
             unique: false,
@@ -42,7 +47,7 @@ const schema = new mongoose.Schema(
     }
 );
 
-schema.index({ id: 1, user_id: 1, mbti: 1, enneagram: 1, zodiac: 1 });
+schema.index({ id: 1, user_id: 1, comment_by: 1, mbti: 1, enneagram: 1, zodiac: 1, });
 
 schema.pre('save', async function (next) {
     if (!this.id) {

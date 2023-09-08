@@ -21,6 +21,6 @@ const schema = new mongoose.Schema(
 
 schema.index({ user_id: 1, comment_id: 1 });
 
-const commentModel = mongoose.model('comments', schema);
+const commentLikeModel = mongoose.model('comments_likes', schema);
 
-module.exports = commentModel;
+module.exports = commentLikeModel;

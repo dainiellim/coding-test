@@ -1,17 +1,18 @@
 'use strict';
 
 const commentModel = require('../models/comment.model');
+const commentLikeModel = require('../models/commentLike.model');
 const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const { commentResource } = require('../resources/comment.resource');
 
 const index = async (req, res, next) => {
     try {
-        const { q, mbti, enneagram, zodiac } = req.query;
+        const { mbti, enneagram, zodiac } = req.query;
         const userId = req.params.userId ?? '';
 
         const query = {
-            user_id: userId,
+            user_id: parseInt(userId),
         };
         (mbti) ? (query.mbti = mbti) : '';
         (enneagram) ? (query.enneagram = enneagram) : '';
@@ -19,11 +20,31 @@ const index = async (req, res, next) => {
 
         const sort = req.query.sort || 'createdAt';
         let order = req.query.order || 'asc';
-        order = (order == 'desc') ? 1 : -1;
+        order = (order == 'desc') ? -1 : 1;
         const sortOption = {};
         sortOption[sort] = order;
 
-        const comments = await commentModel.find(query).sort(sortOption).exec();
+        const comments = await commentModel.aggregate([
+            {
+                $match: query,
+            },
+            {
+                $lookup: {
+                    from: 'comments_likes',
+                    localField: 'id',
+                    foreignField: 'comment_id',
+                    as: 'comment_like',
+                },
+            },
+            {
+                $addFields: {
+                    likes: { $size: '$comment_like' },
+                },
+            },
+            {
+                $sort: sortOption,
+            },
+        ]);
 
         res.status(200).json({ "data": comments.map(commentResource) });
     } catch (error) {
@@ -39,6 +60,7 @@ const store = async (req, res, next) => {
 
         const comment = await commentModel.create({
             "user_id": userId,
+            "comment_by": data.comment_by,
             "title": data.title,
             "comment": data.comment,
             "mbti": data.mbti,
@@ -70,6 +92,22 @@ const show = async (req, res, next) => {
 }
 
 const toggleLike = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { user_id } = req.body;
+
+        const commentLike = await commentLikeModel.findOne({ comment_id: id, user_id: user_id });
+        if (commentLike) {
+            await commentLike.deleteOne();
+            res.status(200).json({ "data": "Comment Unliked!" });
+            return;
+        }
+        await commentLikeModel.create({ comment_id: id, user_id: user_id });
+        res.status(201).json({ "data": "Comment Liked!" });
+    } catch (error) {
+        next(error);
+        res.status(400).json({ "error": "Something Went Wrong!" });
+    }
 }
 
 module.exports = {

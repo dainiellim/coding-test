@@ -10,6 +10,9 @@ const createCommentValidation = [
     check('userId')
         .isNumeric().withMessage('user id must be a number')
         .custom((value) => checkIfExist(userProfileModel, value, 'id')),
+    check('comment_by')
+        .isNumeric().withMessage('user id must be a number')
+        .custom((value) => checkIfExist(userProfileModel, value, 'id')),
     check('title').optional(),
     check('comment').optional(),
     check('mbti').optional()
@@ -26,7 +29,7 @@ const createCommentValidation = [
 const indexCommentValidation = [
     check('userId').isNumeric().withMessage('user id must be a number'),
     check('sort').optional()
-        .custom((value) => ['createdAt', 'like'].includes(value))
+        .custom((value) => ['createdAt', 'likes'].includes(value))
         .withMessage("value is not a sort"),
     check('order').optional()
         .custom((value) => ['asc', 'desc'].includes(value))
@@ -35,6 +38,11 @@ const indexCommentValidation = [
 
 const showCommentValidation = [
     check('userId').isNumeric().withMessage('user id must be a number'),
+    check('id').isNumeric().withMessage('ID must be a number'),
+];
+
+const toggleCommentLikeValidation = [
+    check('user_id').isNumeric().withMessage('user id must be a number'),
     check('id').isNumeric().withMessage('ID must be a number'),
 ];
 
