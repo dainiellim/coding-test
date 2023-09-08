@@ -31,6 +31,8 @@ app.set('view engine', 'ejs');
 
 // routes
 app.use('/', require('./routes/profile')());
+app.use('/', require('./routes/comment')());
+
 
 app.use(errorHandler);
 

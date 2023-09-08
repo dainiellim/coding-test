@@ -23,8 +23,6 @@ const index = async (req, res, next) => {
 
 const store = async (req, res, next) => {
     try {
-        const errors = validationResult(req);
-
         const data = req.body;
 
         const user = await userProfile.create({
