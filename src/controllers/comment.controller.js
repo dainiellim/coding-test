@@ -79,14 +79,35 @@ const show = async (req, res, next) => {
     try {
         const { userId, id } = req.params;
 
-        const comment = await commentModel.findOne({ id: id, user_id: userId }).orFail();
+        const comment = await commentModel.aggregate([
+            {
+                $match: { id: parseInt(id), user_id: parseInt(userId) },
+            },
+            {
+                $lookup: {
+                    from: 'comments_likes',
+                    localField: 'id',
+                    foreignField: 'comment_id',
+                    as: 'comment_like',
+                },
+            },
+            {
+                $addFields: {
+                    likes: { $size: '$comment_like' },
+                },
+            },
+            {
+                $limit: 1
+            }
+        ])
 
-        res.status(200).json({ "data": commentResource(comment) });
-    } catch (error) {
-        next(error);
-        if (error instanceof mongoose.Error.DocumentNotFoundError) {
+        if (!comment.length) {
             return res.status(404).json({ error: "Comment not found!" });
         }
+        res.status(200).json({ "data": commentResource(comment[0]) });
+    } catch (error) {
+        next(error);
+
         res.status(400).json({ "error": "Something Went Wrong!" });
     }
 }

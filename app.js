@@ -10,7 +10,7 @@ const errorHandler = require('./src/middleware/errorHandler');
 //establish in memory mongodb and establish connection
 (async () => {
     const mongoServer = await MongoMemoryServer.create();
-    console.log(mongoServer.getUri());
+    // console.log(mongoServer.getUri());
     await mongoose.connect(mongoServer.getUri(), { dbName: "sm-db" });
     console.log('Connected to MongoDB');
 })();
